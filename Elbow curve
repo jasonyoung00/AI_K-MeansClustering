@@ -1,0 +1,43 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+#iris dataset URL
+url = "http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
+#load dataset to Pandas DataFrame
+df = pd.read_csv(url, header=None)
+#print to output the first rows of dataset
+print(df.head())
+
+#separate the features (data) from the target variable (y)
+data = df.iloc[:, :-1].values
+#scale the features
+scaler = StandardScaler()
+data_scaled = scaler.fit_transform(data)
+
+
+#test variety of values of k
+k_values = range(1, 10)
+inertia_values = []
+#k-means clustering for each value of k
+for k in k_values:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(data_scaled)
+    inertia_values.append(kmeans.inertia_)
+#elbow curve plot
+plt.plot(k_values, inertia_values, 'bx-')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Inertia')
+plt.title('Elbow Curve')
+plt.show()
+
+optimal_k = 3
+kmeans = KMeans(n_clusters=optimal_k, random_state=42)
+kmeans.fit(data_scaled)
+#cluster labels assigned to dataset
+df['Cluster'] = kmeans.labels_
+#number of samples in cluster
+print(df['Cluster'].value_counts())
+#mean values of each feature for each cluster
+print(df.groupby('Cluster').mean())
