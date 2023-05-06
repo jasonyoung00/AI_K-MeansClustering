@@ -1,0 +1,30 @@
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+# Iris dataset URL used to read into a Pandas DataFrame
+url = "http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
+column_names = ["sepal_length", "sepal_width", "petal_length", "petal_width", "class"]
+df = pd.read_csv(url, header=None, names=column_names)
+
+# Extract the features from the DataFrame
+data = df.iloc[:, :-1].values
+
+# Cluster Number
+k = 3
+# K-means algorithm initialised
+kmeans = KMeans(n_clusters=k, random_state=42)
+# Fit model to data
+kmeans.fit(data)
+# Labels and centroids for clusters
+labels = kmeans.labels_
+centroids = kmeans.cluster_centers_
+
+# Show clusters in graph
+plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
+plt.scatter(centroids[:, 0], centroids[:, 1], color='red', marker='o', s=100)
+plt.xlabel('Sepal Length')
+plt.ylabel('Sepal Width')
+plt.title('K-Means Clustering')
+plt.show()
